@@ -5,4 +5,7 @@ edition = "2024"
 
 [dependencies]
 clap = { version = "4.5.4", features = ["derive"] }
-thiserror = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+toml = "0.8"
+anyhow = "1.0"                                      # Für einfache Fehlerbehandlung
+directories = "5.0"                                 # Für plattformübergreifende Konfigurationsverzeichnisse

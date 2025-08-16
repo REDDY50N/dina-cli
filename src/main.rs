@@ -4,18 +4,27 @@ mod storage;
 
 use clap::Parser;
 use cli::{Cli, Commands};
-use models::{Article, MealPlan, Recipe, ShoppingItem};
+use models::Recipe;
 
 fn main() {
+    if let Err(e) = run() {
+        eprintln!("Error: {}", e);
+        std::process::exit(1);
+    }
+}
+
+fn run() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
     match cli.command {
         Commands::List { entity } => handle_list(entity),
-        Commands::Show { entity } => println!("Show command would be executed"),
-        Commands::Add { entity } => println!("Add command would be executed"),
-        Commands::Edit { entity } => println!("Edit command would be executed"),
-        Commands::Delete { entity } => println!("Delete command would be executed"),
+        Commands::Show { entity } => handle_show(entity),
+        Commands::Add { entity } => handle_add(entity)?,
+        Commands::Edit { entity } => handle_edit(entity),
+        Commands::Delete { entity } => handle_delete(entity),
     }
+
+    Ok(())
 }
 
 fn handle_list(entity: cli::ListEntity) {
@@ -27,49 +36,49 @@ fn handle_list(entity: cli::ListEntity) {
     }
 }
 
-
-
-/*
-fn main() {
-    let cli = Cli::parse();
-
-    match cli.command {
-        Commands::List { entity } => handle_list(entity),
-        Commands::Show { entity } => handle_show(entity),
-        Commands::Add { entity } => handle_add(entity),
-        Commands::Edit { entity } => handle_edit(entity),
-        Commands::Delete { entity } => handle_delete(entity),
-    }
-}
-
-// Implementierung der Handler-Funktionen
-// -- List
-fn handle_list(entity: cli::ListEntity) {
+fn handle_show(entity: cli::ShowEntity) {
     match entity {
-        cli::ListEntity::Recipes => storage::list_recipes(),
-        cli::ListEntity::Articles => storage::list_articles(),
-        cli::ListEntity::Meals => storage::list_meals(),
-        cli::ListEntity::Shopping => storage::list_shopping(),
+        cli::ShowEntity::Recipe { name } => println!("Showing recipe: {}", name),
+        cli::ShowEntity::Article { name } => println!("Showing article: {}", name),
     }
 }
 
-// -- Show
-fn handle_show(entity: cli::ListEntity) {
+fn handle_add(entity: cli::AddEntity) -> anyhow::Result<()> {
     match entity {
-        cli::ListEntity::Recipes => storage::show_recipes(),
-        cli::ListEntity::Articles => storage::list_articles(),
-        cli::ListEntity::Meals => storage::list_meals(),
-        cli::ListEntity::Shopping => storage::list_shopping(),
+        cli::AddEntity::Recipe { name, content } => {
+            let recipe = Recipe { name, content };
+            storage::Storage::add_recipe(recipe)?;
+            println!("Recipe added successfully!");
+            Ok(())
+        }
+        cli::AddEntity::Article { name, quantity } => {
+            println!("Adding article: {} - {}", name, quantity);
+            Ok(())
+        }
+        cli::AddEntity::Meal { day, recipe } => {
+            println!("Adding meal: {} on {}", recipe, day);
+            Ok(())
+        }
+        cli::AddEntity::Shopping { item } => {
+            println!("Adding shopping item: {}", item);
+            Ok(())
+        }
     }
 }
 
-// -- Edit
-fn handle_show(entity: cli::ListEntity) {
+fn handle_edit(entity: cli::EditEntity) {
     match entity {
-        cli::ListEntity::Recipes => storage::list_recipes(),
-        cli::ListEntity::Articles => storage::list_articles(),
-        cli::ListEntity::Meals => storage::list_meals(),
-        cli::ListEntity::Shopping => storage::list_shopping(),
+        cli::EditEntity::Recipe { name } => println!("Editing recipe: {}", name),
+        cli::EditEntity::Article { name } => println!("Editing article: {}", name),
+        cli::EditEntity::Meal { day } => println!("Editing meal on: {}", day),
+        cli::EditEntity::Shopping { id } => println!("Editing shopping item: {}", id),
     }
 }
-*/
+
+fn handle_delete(entity: cli::DeleteEntity) {
+    match entity {
+        cli::DeleteEntity::Recipe { name } => println!("Deleting recipe: {}", name),
+        cli::DeleteEntity::Article { name } => println!("Deleting article: {}", name),
+        cli::DeleteEntity::Meal { day } => println!("Deleting meal on: {}", day),
+    }
+}

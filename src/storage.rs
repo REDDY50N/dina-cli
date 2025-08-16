@@ -1,52 +1,55 @@
-use crate::models::{Article, MealPlan, Recipe, ShoppingItem};
+use crate::Recipe;
+use crate::models::Database;
 
-pub fn list_recipes() {
-    println!("Listing recipes from storage");
+use anyhow::{Context, Result};
+use directories::ProjectDirs;
+use std::fs;
+use std::path::PathBuf;
+
+const FILENAME: &str = "/tmp/dina_data.toml";
+
+pub struct Storage;
+
+impl Storage {
+    pub fn get_db_path() -> Result<PathBuf> {
+        let proj_dirs = ProjectDirs::from("com", "dina", "dina-cli")
+            .context("Could not determine project directory")?;
+
+        let data_dir = proj_dirs.data_dir();
+        fs::create_dir_all(data_dir)?;
+
+        Ok(data_dir.join(FILENAME))
+    }
+
+    pub fn load() -> Result<Database> {
+        let path = Self::get_db_path()?;
+
+        if !path.exists() {
+            return Ok(Database::default());
+        }
+
+        let content = fs::read_to_string(&path)
+            .with_context(|| format!("Failed to read database at {:?}", path))?;
+
+        toml::from_str(&content).with_context(|| format!("Failed to parse database at {:?}", path))
+    }
+
+    pub fn save(db: &Database) -> Result<()> {
+        let path = Self::get_db_path()?;
+        let content = toml::to_string_pretty(db).context("Failed to serialize database")?;
+
+        fs::write(&path, content).with_context(|| format!("Failed to write database to {:?}", path))
+    }
+
+    pub fn add_recipe(recipe: Recipe) -> Result<()> {
+        let mut db = Self::load()?;
+
+        // Überprüfe auf Duplikate
+        if db.recipes.iter().any(|r| r.name == recipe.name) {
+            anyhow::bail!("Recipe '{}' already exists", recipe.name);
+        }
+
+        db.recipes.push(recipe);
+        Self::save(&db)
+    }
 }
-
-pub fn list_articles() {
-    println!("Listing articles from storage");
-}
-
-pub fn list_meals() {
-    println!("Listing meals from storage");
-}
-
-pub fn list_shopping() {
-    println!("Listing shopping items from storage");
-}
-
-/*
-use crate::models::{Recipe, Article, MealPlan, ShoppingItem};
-
-// Trait für einheitliche Schnittstelle
-trait Storage {
-    fn save(&self);
-    fn load() -> Self;
-}
-
-// Konkrete Implementierungen
-pub struct JsonStorage;
-pub struct SqliteStorage;
-
-impl Storage for JsonStorage {
-    // JSON-Implementierung
-}
-
-impl Storage for SqliteStorage {
-    // SQLite-Implementierung
-}
-
-// Öffentliche Schnittstelle
-pub fn list_recipes() {
-    let storage = get_storage_impl();
-    // ...
-}
-
-// Helper zur Auswahl der Speichermethode
-fn get_storage_impl() -> impl Storage {
-    // Konfiguration aus Datei oder Umgebungsvariable
-    SqliteStorage // oder JsonStorage
-}
-
-*/
