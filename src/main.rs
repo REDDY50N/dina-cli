@@ -4,6 +4,7 @@ mod storage;
 
 use clap::Parser;
 use cli::{Cli, Commands};
+use models::Article;
 use models::Recipe;
 
 fn main() {
@@ -51,10 +52,14 @@ fn handle_add(entity: cli::AddEntity) -> anyhow::Result<()> {
             println!("Recipe added successfully!");
             Ok(())
         }
+
         cli::AddEntity::Article { name, quantity } => {
-            println!("Adding article: {} - {}", name, quantity);
+            let article = Article { name, quantity };
+            storage::Storage::add_article(article)?;
+            println!("Artikel erfolgreich hinzugefügt/aktualisiert!");
             Ok(())
         }
+
         cli::AddEntity::Meal { day, recipe } => {
             println!("Adding meal: {} on {}", recipe, day);
             Ok(())

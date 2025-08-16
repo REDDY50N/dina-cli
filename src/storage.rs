@@ -1,3 +1,4 @@
+use crate::Article;
 use crate::Recipe;
 use crate::models::Database;
 
@@ -6,6 +7,7 @@ use directories::ProjectDirs;
 use std::fs;
 use std::path::PathBuf;
 
+// -- Database filename (TOML)
 const FILENAME: &str = "/tmp/dina_data.toml";
 
 pub struct Storage;
@@ -44,6 +46,7 @@ impl Storage {
         fs::write(&path, content).with_context(|| format!("Failed to write database to {:?}", path))
     }
 
+    // -- ADD RECIPE
     pub fn add_recipe(recipe: Recipe) -> Result<()> {
         let mut db = Self::load()?;
 
@@ -55,4 +58,20 @@ impl Storage {
         db.recipes.push(recipe);
         Self::save(&db)
     }
+
+    // -- ADD ARTICLE
+    pub fn add_article(article: Article) -> Result<()> {
+        let mut db = Self::load()?;
+
+        // Artikel aktualisieren, wenn bereits vorhanden
+        if let Some(index) = db.articles.iter().position(|a| a.name == article.name) {
+            db.articles[index].quantity += article.quantity;
+        } else {
+            db.articles.push(article);
+        }
+
+        Self::save(&db)
+    }
+
+    // to continue ...
 }

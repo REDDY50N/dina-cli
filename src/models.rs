@@ -12,6 +12,15 @@ pub struct Article {
     pub quantity: u32,
 }
 
+// #[derive(Debug, Clone, Serialize, Deserialize)]
+// pub struct Article {
+//     pub name: String,
+//     pub quantity: u32,
+//     pub unit: Option<String>,      // z.B. "Stück", "kg", "Packungen"
+//     pub category: Option<String>,  // z.B. "Getreide", "Konserven"
+//     pub min_quantity: Option<u32>, // Mindestbestand für automatische Einkaufsliste
+// }
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MealPlan {
     pub day: String,
