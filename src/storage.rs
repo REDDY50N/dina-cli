@@ -11,13 +11,16 @@ const FILENAME: &str = "/tmp/dina_data.toml";
 pub struct Storage;
 
 impl Storage {
+    // -- Check where the project is located/installed
     pub fn get_db_path() -> Result<PathBuf> {
         let proj_dirs = ProjectDirs::from("com", "dina", "dina-cli")
             .context("Could not determine project directory")?;
 
+        // -- Create directory
         let data_dir = proj_dirs.data_dir();
         fs::create_dir_all(data_dir)?;
 
+        // -- Create filename
         Ok(data_dir.join(FILENAME))
     }
 
