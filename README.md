@@ -41,6 +41,7 @@ Using ZED IDE - s. Keybindings: `~/.config/zed/keymap.json`
 
 ## Extensible Structure
 
+```
 src/
 ├── main.rs         # CLI-Parsing und Routing
 ├── cli.rs          # Clap-Definitionen
@@ -54,3 +55,4 @@ src/
 │   ├── list.rs     # list-Implementierung
 │   └── show.rs     # show-Implementierung
 └── editor.rs       # Editor-Integration
+```
