@@ -1,3 +1,22 @@
+use crate::models::{Article, MealPlan, Recipe, ShoppingItem};
+
+pub fn list_recipes() {
+    println!("Listing recipes from storage");
+}
+
+pub fn list_articles() {
+    println!("Listing articles from storage");
+}
+
+pub fn list_meals() {
+    println!("Listing meals from storage");
+}
+
+pub fn list_shopping() {
+    println!("Listing shopping items from storage");
+}
+
+/*
 use crate::models::{Recipe, Article, MealPlan, ShoppingItem};
 
 // Trait für einheitliche Schnittstelle
@@ -29,3 +48,5 @@ fn get_storage_impl() -> impl Storage {
     // Konfiguration aus Datei oder Umgebungsvariable
     SqliteStorage // oder JsonStorage
 }
+
+*/
