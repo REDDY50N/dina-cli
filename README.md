@@ -38,6 +38,11 @@ Save data in database e.g. SQLite
 
 Using ZED IDE - s. Keybindings: `~/.config/zed/keymap.json`
 
+## Inspiration
+
+### Rust CLI apps
+- List of CLI apps: https://github.com/sts10/rust-command-line-utilities
+-
 
 ## Extensible Structure
 
@@ -55,4 +60,15 @@ src/
 │   ├── list.rs     # list-Implementierung
 │   └── show.rs     # show-Implementierung
 └── editor.rs       # Editor-Integration
+```
+
+
+## Usage
+
+### Articles (Household ERP)
+
+```sh
+dina list articles
+dina add article "Mehl" 3 --unit "kg" --category "Getreide" --min-quantity 2
+dina add article "Mehl" 2
 ```

@@ -6,7 +6,9 @@ use clap::Parser;
 use cli::{Cli, Commands};
 use models::Article;
 use models::Recipe;
-
+// ----------------------------------------------
+// -- MAIN FUNCTION
+// ----------------------------------------------
 fn main() {
     if let Err(e) = run() {
         eprintln!("Error: {}", e);
@@ -14,29 +16,82 @@ fn main() {
     }
 }
 
+// ----------------------------------------------
+// RUN FUNCTION
+// ----------------------------------------------
 fn run() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
     match cli.command {
         Commands::List { entity } => handle_list(entity),
-        Commands::Show { entity } => handle_show(entity),
-        Commands::Add { entity } => handle_add(entity)?,
-        Commands::Edit { entity } => handle_edit(entity),
-        Commands::Delete { entity } => handle_delete(entity),
+        Commands::Show { entity } => {
+            handle_show(entity);
+            Ok(())
+        }
+        Commands::Add { entity } => handle_add(entity),
+        Commands::Edit { entity } => {
+            handle_edit(entity);
+            Ok(())
+        }
+        Commands::Delete { entity } => {
+            handle_delete(entity);
+            Ok(())
+        }
     }
-
-    Ok(())
 }
 
-fn handle_list(entity: cli::ListEntity) {
+// ----------------------------------------------
+// HADNLE - LIST
+// ----------------------------------------------
+fn handle_list(entity: cli::ListEntity) -> anyhow::Result<()> {
     match entity {
-        cli::ListEntity::Recipes => println!("Listing all recipes"),
-        cli::ListEntity::Articles => println!("Listing all articles"),
-        cli::ListEntity::Meals => println!("Listing all meals"),
-        cli::ListEntity::Shopping => println!("Listing shopping list"),
+        cli::ListEntity::Recipes => {
+            println!("Listing all recipes:");
+            // Hier später die Rezepte auflisten
+            Ok(())
+        }
+        cli::ListEntity::Articles => {
+            let articles = storage::Storage::list_articles()?;
+            if articles.is_empty() {
+                println!("Keine Artikel im Lager.");
+            } else {
+                println!(
+                    "{:<20} {:<10} {:<10} {:<15} {:<10}",
+                    "Name", "Menge", "Einheit", "Kategorie", "Min-Bestand"
+                );
+                println!("{}", "-".repeat(65));
+
+                for article in articles {
+                    println!(
+                        "{:<20} {:<10} {:<10} {:<15} {:<10}",
+                        article.name,
+                        article.quantity,
+                        article.unit.as_deref().unwrap_or("-"),
+                        article.category.as_deref().unwrap_or("-"),
+                        article
+                            .min_quantity
+                            .map_or("-".to_string(), |q| q.to_string())
+                    );
+                }
+            }
+            Ok(())
+        }
+        cli::ListEntity::Meals => {
+            println!("Listing all meals:");
+            // Hier später die Mahlzeiten auflisten
+            Ok(())
+        }
+        cli::ListEntity::Shopping => {
+            println!("Listing shopping list:");
+            // Hier später die Einkaufsliste auflisten
+            Ok(())
+        }
     }
 }
 
+// ----------------------------------------------
+// HADNLE - SHOW
+// ----------------------------------------------
 fn handle_show(entity: cli::ShowEntity) {
     match entity {
         cli::ShowEntity::Recipe { name } => println!("Showing recipe: {}", name),
@@ -44,22 +99,35 @@ fn handle_show(entity: cli::ShowEntity) {
     }
 }
 
+// ----------------------------------------------
+// HADNLE - ADD
+// ----------------------------------------------
 fn handle_add(entity: cli::AddEntity) -> anyhow::Result<()> {
     match entity {
         cli::AddEntity::Recipe { name, content } => {
             let recipe = Recipe { name, content };
             storage::Storage::add_recipe(recipe)?;
-            println!("Recipe added successfully!");
+            println!("Rezept erfolgreich hinzugefügt!");
             Ok(())
         }
-
-        cli::AddEntity::Article { name, quantity } => {
-            let article = Article { name, quantity };
+        cli::AddEntity::Article {
+            name,
+            quantity,
+            unit,
+            category,
+            min_quantity,
+        } => {
+            let article = Article {
+                name,
+                quantity,
+                unit,
+                category,
+                min_quantity,
+            };
             storage::Storage::add_article(article)?;
             println!("Artikel erfolgreich hinzugefügt/aktualisiert!");
             Ok(())
         }
-
         cli::AddEntity::Meal { day, recipe } => {
             println!("Adding meal: {} on {}", recipe, day);
             Ok(())
@@ -71,6 +139,9 @@ fn handle_add(entity: cli::AddEntity) -> anyhow::Result<()> {
     }
 }
 
+// ----------------------------------------------
+// HADNLE - EDIT
+// ----------------------------------------------
 fn handle_edit(entity: cli::EditEntity) {
     match entity {
         cli::EditEntity::Recipe { name } => println!("Editing recipe: {}", name),
@@ -80,6 +151,9 @@ fn handle_edit(entity: cli::EditEntity) {
     }
 }
 
+// ----------------------------------------------
+// HADNLE - DELETE
+// ----------------------------------------------
 fn handle_delete(entity: cli::DeleteEntity) {
     match entity {
         cli::DeleteEntity::Recipe { name } => println!("Deleting recipe: {}", name),
