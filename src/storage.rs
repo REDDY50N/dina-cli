@@ -9,7 +9,7 @@ use std::fs;
 use std::path::PathBuf;
 
 // -- Database filename (TOML)
-const FILENAME: &str = "/tmp/dina_data.toml";
+const FILENAME: &str = "/home/polar/CODE/dina-database/dina.toml";
 
 // -- Storage / Database struct
 pub struct Storage;
