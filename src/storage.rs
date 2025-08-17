@@ -8,6 +8,9 @@ use directories::ProjectDirs;
 use std::fs;
 use std::path::PathBuf;
 
+use crate::sync::GitHubSync;
+use crate::token::TokenManager;
+
 // -- Database filename (TOML)
 const FILENAME: &str = "/home/polar/CODE/dina-database/dina.toml";
 
@@ -53,13 +56,13 @@ impl Storage {
 // ----------------------------------------------
 // WRITE TO DATABASE
 // ----------------------------------------------
-impl Storage {
-    pub fn save(db: &Database) -> Result<()> {
-        let path = Self::get_db_path()?;
-        let content = toml::to_string_pretty(db).context("Failed to serialize database")?;
-        fs::write(&path, content).with_context(|| format!("Failed to write database to {:?}", path))
-    }
-}
+// impl Storage {
+//     pub fn save(db: &Database) -> Result<()> {
+//         let path = Self::get_db_path()?;
+//         let content = toml::to_string_pretty(db).context("Failed to serialize database")?;
+//         fs::write(&path, content).with_context(|| format!("Failed to write database to {:?}", path))
+//     }
+// }
 
 // ----------------------------------------------
 // LIST ARTICLES
@@ -105,5 +108,23 @@ impl Storage {
         }
 
         Self::save(&db)
+    }
+}
+
+// ----------------------------------------------
+// SYNC DA
+// ----------------------------------------------
+impl Storage {
+    pub fn save(db: &Database) -> Result<()> {
+        // ... bestehende Speicherlogik
+
+        // Automatischen Sync ausführen
+        if auto_sync_enabled() {
+            let token = token::TokenManager::load_token()?;
+            let github_sync = sync::GitHubSync::new(token.as_deref());
+            let _ = github_sync.push("Automatic update");
+        }
+
+        Ok(())
     }
 }

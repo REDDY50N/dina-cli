@@ -10,7 +10,7 @@ pub struct Cli {
 }
 
 // ----------------------------------------------
-// SUB-COMMANDS
+// COMMANDS
 // ----------------------------------------------
 #[derive(Subcommand)]
 pub enum Commands {
@@ -42,6 +42,12 @@ pub enum Commands {
     Delete {
         #[command(subcommand)]
         entity: DeleteEntity,
+    },
+
+    /// Synchronisiert die Datenbank mit GitHub
+    Sync {
+        #[command(subcommand)]
+        action: SyncAction,
     },
 }
 
@@ -112,4 +118,22 @@ pub enum DeleteEntity {
     Recipe { name: String },
     Article { name: String },
     Meal { day: String },
+}
+
+// ----------------------------------------------
+// SYNC WITH REMOTE GIT
+// ----------------------------------------------
+#[derive(Subcommand)]
+pub enum SyncAction {
+    /// Holt die neueste Version der Datenbank von GitHub
+    Pull,
+
+    /// Sendet lokale Änderungen an GitHub
+    Push {
+        #[arg(short, long)]
+        message: Option<String>,
+    },
+
+    /// Setzt den GitHub Personal Access Token
+    SetToken { token: String },
 }

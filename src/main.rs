@@ -1,6 +1,8 @@
 mod cli;
 mod models;
 mod storage;
+mod sync;
+mod token;
 
 use clap::Parser;
 use cli::{Cli, Commands};
@@ -37,6 +39,8 @@ fn run() -> anyhow::Result<()> {
             handle_delete(entity);
             Ok(())
         }
+
+        Commands::Sync { action } => handle_sync(action),
     }
 }
 
@@ -160,4 +164,30 @@ fn handle_delete(entity: cli::DeleteEntity) {
         cli::DeleteEntity::Article { name } => println!("Deleting article: {}", name),
         cli::DeleteEntity::Meal { day } => println!("Deleting meal on: {}", day),
     }
+}
+
+// ----------------------------------------------
+// SYNC
+// ----------------------------------------------
+fn handle_sync(action: cli::SyncAction) -> anyhow::Result<()> {
+    let token = token::TokenManager::load_token()?;
+    let github_sync = sync::GitHubSync::new(token.as_deref());
+
+    match action {
+        cli::SyncAction::Pull => {
+            github_sync.pull()?;
+            println!("Database successfully pulled from GitHub");
+        }
+        cli::SyncAction::Push { message } => {
+            let commit_message = message.unwrap_or_else(|| "Update from dina-cli".to_string());
+            github_sync.push(&commit_message)?;
+            println!("Database successfully pushed to GitHub");
+        }
+        cli::SyncAction::SetToken { token } => {
+            token::TokenManager::save_token(&token)?;
+            println!("GitHub token saved successfully");
+        }
+    }
+
+    Ok(())
 }
