@@ -1,38 +1,51 @@
 use serde::{Deserialize, Serialize};
 
+// ----------------------------------------------
+// RECIPE
+// ----------------------------------------------
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Recipe {
     pub name: String,
     pub content: String,
 }
 
+// ----------------------------------------------
+// ARTICLE IN HOUSEHOLD ERP
+// ----------------------------------------------
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Article {
     pub name: String,
     pub quantity: u32,
+    #[serde(skip_serializing_if = "Option::is_none")] // z.B. "Stück", "kg", "Packungen"
+    pub unit: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")] // z.B. "Getreide", "Konserven"
+    pub category: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    // Mindestbestand für automatische Einkaufsliste (später)
+    pub min_quantity: Option<u32>,
 }
 
-// #[derive(Debug, Clone, Serialize, Deserialize)]
-// pub struct Article {
-//     pub name: String,
-//     pub quantity: u32,
-//     pub unit: Option<String>,      // z.B. "Stück", "kg", "Packungen"
-//     pub category: Option<String>,  // z.B. "Getreide", "Konserven"
-//     pub min_quantity: Option<u32>, // Mindestbestand für automatische Einkaufsliste
-// }
-
+// ----------------------------------------------
+// WEEKLY MEAL PLAN
+// ----------------------------------------------
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MealPlan {
     pub day: String,
     pub recipe: String,
 }
 
+// ----------------------------------------------
+// SHOPPING LIST ITEM
+// ----------------------------------------------
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ShoppingItem {
     pub id: usize,
     pub name: String,
 }
 
+// ----------------------------------------------
+// DATABASE
+// ----------------------------------------------
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Database {
     pub recipes: Vec<Recipe>,
@@ -41,6 +54,9 @@ pub struct Database {
     pub shopping_list: Vec<ShoppingItem>,
 }
 
+// ----------------------------------------------
+// DATABASE DEFAULT
+// ----------------------------------------------
 impl Default for Database {
     fn default() -> Self {
         Database {

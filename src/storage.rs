@@ -1,6 +1,7 @@
-use crate::Article;
+//use crate::Article;
 use crate::Recipe;
-use crate::models::Database;
+// use crate::models::Database;
+use crate::models::{Article, Database};
 
 use anyhow::{Context, Result};
 use directories::ProjectDirs;
@@ -8,10 +9,14 @@ use std::fs;
 use std::path::PathBuf;
 
 // -- Database filename (TOML)
-const FILENAME: &str = "/tmp/dina_data.toml";
+const FILENAME: &str = "/home/polar/CODE/dina-database/dina.toml";
 
+// -- Storage / Database struct
 pub struct Storage;
 
+// ----------------------------------------------
+// INIT DATABASE
+// ----------------------------------------------
 impl Storage {
     // -- Check where the project is located/installed
     pub fn get_db_path() -> Result<PathBuf> {
@@ -25,7 +30,12 @@ impl Storage {
         // -- Create filename
         Ok(data_dir.join(FILENAME))
     }
+}
 
+// ----------------------------------------------
+// LOAD DATABASE
+// ----------------------------------------------
+impl Storage {
     pub fn load() -> Result<Database> {
         let path = Self::get_db_path()?;
 
@@ -38,15 +48,33 @@ impl Storage {
 
         toml::from_str(&content).with_context(|| format!("Failed to parse database at {:?}", path))
     }
+}
 
+// ----------------------------------------------
+// WRITE TO DATABASE
+// ----------------------------------------------
+impl Storage {
     pub fn save(db: &Database) -> Result<()> {
         let path = Self::get_db_path()?;
         let content = toml::to_string_pretty(db).context("Failed to serialize database")?;
-
         fs::write(&path, content).with_context(|| format!("Failed to write database to {:?}", path))
     }
+}
 
-    // -- ADD RECIPE
+// ----------------------------------------------
+// LIST ARTICLES
+// ----------------------------------------------
+impl Storage {
+    pub fn list_articles() -> anyhow::Result<Vec<Article>> {
+        let db = Self::load()?;
+        Ok(db.articles)
+    }
+}
+
+// ----------------------------------------------
+// ADD RECIPE
+// ----------------------------------------------
+impl Storage {
     pub fn add_recipe(recipe: Recipe) -> Result<()> {
         let mut db = Self::load()?;
 
@@ -58,20 +86,24 @@ impl Storage {
         db.recipes.push(recipe);
         Self::save(&db)
     }
+}
 
-    // -- ADD ARTICLE
+// ----------------------------------------------
+// ADD ARTICLE
+// ----------------------------------------------
+impl Storage {
     pub fn add_article(article: Article) -> Result<()> {
         let mut db = Self::load()?;
 
-        // Artikel aktualisieren, wenn bereits vorhanden
+        // Prüfe, ob der Artikel bereits existiert
         if let Some(index) = db.articles.iter().position(|a| a.name == article.name) {
+            // Artikel existiert - Menge aktualisieren
             db.articles[index].quantity += article.quantity;
         } else {
+            // Neuer Artikel - hinzufügen
             db.articles.push(article);
         }
 
         Self::save(&db)
     }
-
-    // to continue ...
 }
