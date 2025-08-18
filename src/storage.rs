@@ -1,7 +1,7 @@
 //use crate::Article;
 use crate::Recipe;
 // use crate::models::Database;
-use crate::models::{Article, Database};
+use crate::models::{Article, Database, MealPlan};
 
 use anyhow::{Context, Result};
 use directories::ProjectDirs;
@@ -9,7 +9,7 @@ use std::fs;
 use std::path::PathBuf;
 
 // -- Database filename (TOML)
-const FILENAME: &str = "/home/polar/CODE/dina-database/dina.toml";
+const FILENAME: &str = "/home/polar/.local/share/dina-cli/dina_data.toml";
 
 // -- Storage / Database struct
 pub struct Storage;
@@ -105,6 +105,27 @@ impl Storage {
         }
 
         Self::save(&db)
+    }
+}
+
+// ----------------------------------------------
+// ADD MEAL (MEAL PLAN)
+// ----------------------------------------------
+impl Storage {
+    pub fn add_meal(meal: MealPlan) -> Result<()> {
+        let mut db = Self::load()?;
+
+        // Entferne vorhandene Mahlzeit für den gleichen Tag
+        db.meal_plans
+            .retain(|m| m.day.to_lowercase() != meal.day.to_lowercase());
+
+        db.meal_plans.push(meal);
+        Self::save(&db)
+    }
+
+    pub fn list_meals() -> Result<Vec<MealPlan>> {
+        let db = Self::load()?;
+        Ok(db.meal_plans)
     }
 }
 

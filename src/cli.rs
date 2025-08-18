@@ -76,10 +76,13 @@ pub enum ShowEntity {
 // ----------------------------------------------
 #[derive(Subcommand)]
 pub enum AddEntity {
+    // -- RECIPE
     Recipe {
         name: String,
         content: String,
     },
+
+    // -- FOOD STOCK
     Article {
         name: String,
         quantity: u32,
@@ -90,10 +93,14 @@ pub enum AddEntity {
         #[arg(long)]
         min_quantity: Option<u32>,
     },
+
+    // -- MEAL PLAN
     Meal {
         day: String,
         recipe: String,
     },
+
+    // -- SHPPING LIST
     Shopping {
         item: String,
     },

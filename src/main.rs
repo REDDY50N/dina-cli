@@ -6,7 +6,7 @@ mod storage;
 use clap::Parser;
 
 use cli::{Cli, Commands, SyncAction};
-use models::{Article, Recipe};
+use models::{Article, MealPlan, Recipe};
 
 // ----------------------------------------------
 // -- MAIN FUNCTION
@@ -80,11 +80,50 @@ fn handle_list(entity: cli::ListEntity) -> anyhow::Result<()> {
             }
             Ok(())
         }
+
+        // -- MEAL PLAN
         cli::ListEntity::Meals => {
-            println!("Listing all meals:");
-            // Hier später die Mahlzeiten auflisten
+            let meals = storage::Storage::list_meals()?;
+
+            const WEEKDAYS: [&str; 7] = [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday",
+            ];
+
+            let mut meal_map = std::collections::HashMap::new();
+            for meal in &meals {
+                meal_map.insert(meal.day.to_lowercase(), meal.recipe.clone());
+            }
+
+            println!("╔════════════╦═══════════════════════════════════════════════════╗");
+            println!("║ {:10} ║ {:45}     ║", "Tag", "Gericht");
+            println!("╠════════════╬═══════════════════════════════════════════════════╣");
+
+            for day in WEEKDAYS {
+                let recipe = meal_map
+                    .get(&day.to_lowercase())
+                    .map(|s| s.clone())
+                    .unwrap_or_else(|| "-".to_string());
+
+                let display_recipe = if recipe.len() > 43 {
+                    format!("{}...", &recipe[..40])
+                } else {
+                    recipe
+                };
+
+                println!("║ {:10} ║ {:45}     ║", day, display_recipe);
+            }
+
+            println!("╚════════════╩═══════════════════════════════════════════════════╝");
             Ok(())
         }
+
+        // -- SHOPPING LIST
         cli::ListEntity::Shopping => {
             println!("Listing shopping list:");
             // Hier später die Einkaufsliste auflisten
@@ -132,10 +171,34 @@ fn handle_add(entity: cli::AddEntity) -> anyhow::Result<()> {
             println!("Artikel erfolgreich hinzugefügt/aktualisiert!");
             Ok(())
         }
+
+        // -- MEAL PLAN
         cli::AddEntity::Meal { day, recipe } => {
-            println!("Adding meal: {} on {}", recipe, day);
+            // Validiere Tag
+            let valid_days = [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday",
+            ];
+
+            if !valid_days.contains(&day.to_lowercase().as_str()) {
+                anyhow::bail!(
+                    "Ungültiger Wochentag: {}. Erlaubt sind: {}",
+                    day,
+                    valid_days.join(", ")
+                );
+            }
+
+            let meal = MealPlan { day, recipe };
+            storage::Storage::add_meal(meal)?;
+            println!("Mahlzeit erfolgreich hinzugefügt!");
             Ok(())
         }
+
         cli::AddEntity::Shopping { item } => {
             println!("Adding shopping item: {}", item);
             Ok(())
