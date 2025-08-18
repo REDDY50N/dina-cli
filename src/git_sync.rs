@@ -1,6 +1,5 @@
 use crate::storage::Storage;
-use anyhow::{Context, Result, anyhow};
-//use std::path::Path;
+use anyhow::Result;
 use std::process::{Command, Stdio};
 
 #[derive(thiserror::Error, Debug)]
@@ -40,7 +39,7 @@ impl GitSync {
                 .arg("init")
                 .current_dir(&db_dir)
                 .status()
-                .context("Failed to initialize git repository")?;
+                .map_err(|e| GitError::CommandFailed(e.to_string()))?;
         }
 
         // Remote-URL setzen
@@ -61,7 +60,7 @@ impl GitSync {
             .arg(remote_url)
             .current_dir(&db_dir)
             .status()
-            .context("Failed to add git remote")?;
+            .map_err(|e| GitError::CommandFailed(e.to_string()))?;
 
         println!("Git repository initialized at {}", db_dir.display());
         Ok(())
@@ -80,20 +79,20 @@ impl GitSync {
             .arg("stash")
             .current_dir(&db_dir)
             .status()
-            .context("Failed to stash changes")?;
+            .map_err(|e| GitError::CommandFailed(e.to_string()))?;
 
         // Pull durchführen
         let status = Command::new("git")
             .arg("pull")
             .arg("--ff-only")
             .arg("origin")
-            .arg("main") // oder der aktuelle Branch
+            .arg("main")
             .current_dir(&db_dir)
             .status()
-            .context("Failed to execute git pull")?;
+            .map_err(|e| GitError::CommandFailed(e.to_string()))?;
 
         if !status.success() {
-            return Err(anyhow!("Git pull failed"));
+            return Err(GitError::CommandFailed("Git pull failed".to_string()).into());
         }
 
         // Stash wieder anwenden
@@ -102,7 +101,7 @@ impl GitSync {
             .arg("pop")
             .current_dir(&db_dir)
             .status()
-            .context("Failed to apply stash")?;
+            .map_err(|e| GitError::CommandFailed(e.to_string()))?;
 
         println!("Database successfully pulled from remote repository");
         Ok(())
@@ -122,10 +121,10 @@ impl GitSync {
             .arg(".")
             .current_dir(&db_dir)
             .status()
-            .context("Failed to execute git add")?;
+            .map_err(|e| GitError::CommandFailed(e.to_string()))?;
 
         if !add_status.success() {
-            return Err(anyhow!("Git add failed"));
+            return Err(GitError::CommandFailed("Git add failed".to_string()).into());
         }
 
         // Commit erstellen
@@ -135,23 +134,27 @@ impl GitSync {
             .arg(message)
             .current_dir(&db_dir)
             .status()
-            .context("Failed to execute git commit")?;
+            .map_err(|e| GitError::CommandFailed(e.to_string()))?;
+
+        if !commit_status.success() {
+            return Err(GitError::CommandFailed("Git commit failed".to_string()).into());
+        }
 
         // Push durchführen
         let push_status = Command::new("git")
             .arg("push")
             .arg("-u")
             .arg("origin")
-            .arg("main") // oder der aktuelle Branch
+            .arg("main")
             .current_dir(&db_dir)
             .status()
-            .context("Failed to execute git push")?;
+            .map_err(|e| GitError::CommandFailed(e.to_string()))?;
 
         if push_status.success() {
             println!("Database successfully pushed to remote repository");
             Ok(())
         } else {
-            Err(anyhow!("Git push failed"))
+            Err(GitError::CommandFailed("Git push failed".to_string()).into())
         }
     }
 
@@ -168,7 +171,7 @@ impl GitSync {
             .arg("status")
             .current_dir(&db_dir)
             .status()
-            .context("Failed to execute git status")?;
+            .map_err(|e| GitError::CommandFailed(e.to_string()))?;
 
         println!("\nRemote repository:");
         Command::new("git")
@@ -176,7 +179,7 @@ impl GitSync {
             .arg("-v")
             .current_dir(&db_dir)
             .status()
-            .context("Failed to show git remotes")?;
+            .map_err(|e| GitError::CommandFailed(e.to_string()))?;
 
         Ok(())
     }
