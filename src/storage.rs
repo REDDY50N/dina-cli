@@ -107,3 +107,20 @@ impl Storage {
         Self::save(&db)
     }
 }
+
+// ----------------------------------------------
+// GET DB DIR
+// ----------------------------------------------
+impl Storage {
+    // ... bestehende Funktionen ...
+
+    pub fn get_db_dir() -> anyhow::Result<std::path::PathBuf> {
+        let proj_dirs = ProjectDirs::from("com", "dina", "dina-cli")
+            .context("Could not determine project directory")?;
+
+        let data_dir = proj_dirs.data_dir();
+        std::fs::create_dir_all(data_dir)?;
+
+        Ok(data_dir.to_path_buf())
+    }
+}

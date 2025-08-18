@@ -1,11 +1,13 @@
 mod cli;
+mod git_sync;
 mod models;
 mod storage;
 
 use clap::Parser;
-use cli::{Cli, Commands};
-use models::Article;
-use models::Recipe;
+
+use cli::{Cli, Commands, SyncAction};
+use models::{Article, Recipe};
+
 // ----------------------------------------------
 // -- MAIN FUNCTION
 // ----------------------------------------------
@@ -37,6 +39,8 @@ fn run() -> anyhow::Result<()> {
             handle_delete(entity);
             Ok(())
         }
+
+        Commands::Sync { action } => handle_sync(action),
     }
 }
 
@@ -159,5 +163,34 @@ fn handle_delete(entity: cli::DeleteEntity) {
         cli::DeleteEntity::Recipe { name } => println!("Deleting recipe: {}", name),
         cli::DeleteEntity::Article { name } => println!("Deleting article: {}", name),
         cli::DeleteEntity::Meal { day } => println!("Deleting meal on: {}", day),
+    }
+}
+
+// ----------------------------------------------
+// HADNLE - GIT SYNC
+// ----------------------------------------------
+fn handle_sync(action: SyncAction) -> anyhow::Result<()> {
+    match action {
+        // -- INIT
+        SyncAction::Init { remote_url } => {
+            git_sync::GitSync::init(&remote_url)?;
+            println!("Repository initialized with remote: {}", remote_url);
+            Ok(())
+        }
+        // -- PULL
+        SyncAction::Pull => {
+            git_sync::GitSync::pull()?;
+            Ok(())
+        }
+        // -- PUSH
+        SyncAction::Push { message } => {
+            let commit_message = message.unwrap_or_else(|| "Update from dina-cli".to_string());
+            git_sync::GitSync::push(&commit_message)
+        }
+        // -- STATUS
+        SyncAction::Status => {
+            git_sync::GitSync::status()?;
+            Ok(())
+        }
     }
 }

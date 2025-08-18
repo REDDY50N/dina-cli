@@ -72,3 +72,13 @@ dina list articles
 dina add article "Mehl" 3 --unit "kg" --category "Getreide" --min-quantity 2
 dina add article "Mehl" 2
 ```
+
+### Sync database with remote git repo
+
+Needs git installed on your system and SSH access to your remote git.
+
+- Init repo: `dina sync init git@github.com:deinusername/dina-database.git`
+- Commit: `dina sync push -m "Initial database"`
+- Pull: `dina sync pull`
+- Push: `dina sync push -m "Added new recipes`
+- Status: `dina sync status`
