@@ -40,7 +40,7 @@ fn run() -> anyhow::Result<()> {
             Ok(())
         }
 
-        Commands::Sync { action } => handle_sync(action),
+        Commands::Git { action } => handle_sync(action),
     }
 }
 

@@ -45,7 +45,7 @@ pub enum Commands {
     },
 
     /// Synchronisiert die Datenbank mit einem Git-Repository
-    Sync {
+    Git {
         #[command(subcommand)]
         action: SyncAction,
     },
