@@ -3,7 +3,7 @@ use clap::{Parser, Subcommand};
 #[derive(Parser)]
 #[command(name = "dina")]
 #[command(version = "1.0")]
-#[command(about = "Alltagshelfer für Essensplanung", long_about = None)]
+#[command(about = "Daily Assist (Meal Planer, Shopping List, Food Stock)", long_about = None)]
 pub struct Cli {
     #[command(subcommand)]
     pub command: Commands,
@@ -42,6 +42,12 @@ pub enum Commands {
     Delete {
         #[command(subcommand)]
         entity: DeleteEntity,
+    },
+
+    /// Synchronisiert die Datenbank mit einem Git-Repository
+    Git {
+        #[command(subcommand)]
+        action: SyncAction,
     },
 }
 
@@ -112,4 +118,22 @@ pub enum DeleteEntity {
     Recipe { name: String },
     Article { name: String },
     Meal { day: String },
+}
+
+// ----------------------------------------------
+// SYNC CMD
+// ----------------------------------------------
+#[derive(Subcommand)]
+pub enum SyncAction {
+    /// Initialisiert das Datenverzeichnis als Git-Repository
+    Init { remote_url: String },
+    /// Holt die neueste Version der Datenbank vom Remote-Repository
+    Pull,
+    /// Sendet lokale Änderungen an das Remote-Repository
+    Push {
+        #[arg(short, long)]
+        message: Option<String>,
+    },
+    /// Zeigt den aktuellen Synchronisationsstatus
+    Status,
 }
