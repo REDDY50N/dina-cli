@@ -112,8 +112,6 @@ impl Storage {
 // GET DB DIR
 // ----------------------------------------------
 impl Storage {
-    // ... bestehende Funktionen ...
-
     pub fn get_db_dir() -> anyhow::Result<std::path::PathBuf> {
         let proj_dirs = ProjectDirs::from("com", "dina", "dina-cli")
             .context("Could not determine project directory")?;
