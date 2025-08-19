@@ -232,7 +232,7 @@ fn handle_add(entity: cli::AddEntity) -> anyhow::Result<()> {
                 store,
                 purchased: false,
             };
-            println!("Add Item to shopping list: {:#?}", shopping_item);
+            println!("Add Item to shopping list: {}", shopping_item.name);
             storage::Storage::add_shopping_item(shopping_item)?;
             Ok(())
         }
