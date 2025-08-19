@@ -76,10 +76,13 @@ pub enum ShowEntity {
 // ----------------------------------------------
 #[derive(Subcommand)]
 pub enum AddEntity {
+    // -- RECIPE
     Recipe {
         name: String,
         content: String,
     },
+
+    // -- FOOD STOCK
     Article {
         name: String,
         quantity: u32,
@@ -90,10 +93,14 @@ pub enum AddEntity {
         #[arg(long)]
         min_quantity: Option<u32>,
     },
+
+    // -- MEAL PLAN
     Meal {
         day: String,
         recipe: String,
     },
+
+    // -- SHPPING LIST
     Shopping {
         item: String,
     },
@@ -115,9 +122,10 @@ pub enum EditEntity {
 // ----------------------------------------------
 #[derive(Subcommand)]
 pub enum DeleteEntity {
-    Recipe { name: String },
-    Article { name: String },
-    Meal { day: String },
+    Recipe { name: String },  // Delete recipe by name
+    Article { name: String }, // Delete article by name
+    Meal { day: String },     // Delete meal by day (monday, tuesday, ...)
+    Shopping { id: usize },   // Delete shopping list item by ID
 }
 
 // ----------------------------------------------

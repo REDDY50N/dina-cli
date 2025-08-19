@@ -1,7 +1,7 @@
 //use crate::Article;
 use crate::Recipe;
 // use crate::models::Database;
-use crate::models::{Article, Database};
+use crate::models::{Article, Database, MealPlan};
 
 use anyhow::{Context, Result};
 use directories::ProjectDirs;
@@ -9,7 +9,7 @@ use std::fs;
 use std::path::PathBuf;
 
 // -- Database filename (TOML)
-const FILENAME: &str = "/home/polar/CODE/dina-database/dina.toml";
+const FILENAME: &str = "/home/polar/.local/share/dina-cli/dina_data.toml";
 
 // -- Storage / Database struct
 pub struct Storage;
@@ -29,6 +29,21 @@ impl Storage {
 
         // -- Create filename
         Ok(data_dir.join(FILENAME))
+    }
+}
+
+// ----------------------------------------------
+// GET DB DIR
+// ----------------------------------------------
+impl Storage {
+    pub fn get_db_dir() -> anyhow::Result<std::path::PathBuf> {
+        let proj_dirs = ProjectDirs::from("com", "dina", "dina-cli")
+            .context("Could not determine project directory")?;
+
+        let data_dir = proj_dirs.data_dir();
+        std::fs::create_dir_all(data_dir)?;
+
+        Ok(data_dir.to_path_buf())
     }
 }
 
@@ -109,16 +124,94 @@ impl Storage {
 }
 
 // ----------------------------------------------
-// GET DB DIR
+// ADD MEAL (MEAL PLAN)
 // ----------------------------------------------
 impl Storage {
-    pub fn get_db_dir() -> anyhow::Result<std::path::PathBuf> {
-        let proj_dirs = ProjectDirs::from("com", "dina", "dina-cli")
-            .context("Could not determine project directory")?;
+    pub fn add_meal(meal: MealPlan) -> Result<()> {
+        let mut db = Self::load()?;
 
-        let data_dir = proj_dirs.data_dir();
-        std::fs::create_dir_all(data_dir)?;
+        // Entferne vorhandene Mahlzeit für den gleichen Tag
+        db.meal_plans
+            .retain(|m| m.day.to_lowercase() != meal.day.to_lowercase());
 
-        Ok(data_dir.to_path_buf())
+        db.meal_plans.push(meal);
+        Self::save(&db)
+    }
+
+    pub fn list_meals() -> Result<Vec<MealPlan>> {
+        let db = Self::load()?;
+        Ok(db.meal_plans)
+    }
+}
+
+// ----------------------------------------------
+// DELETE RECIPE
+// ----------------------------------------------
+impl Storage {
+    pub fn delete_recipe(name: &str) -> Result<()> {
+        let mut db = Self::load()?;
+        let original_len = db.recipes.len();
+        db.recipes
+            .retain(|r| r.name.to_lowercase() != name.to_lowercase());
+
+        if db.recipes.len() == original_len {
+            anyhow::bail!("Rezept '{}' nicht gefunden", name);
+        }
+
+        Self::save(&db)
+    }
+}
+
+// ----------------------------------------------
+// DELETE MEAL (MEAL PLAN)
+// ----------------------------------------------
+impl Storage {
+    pub fn delete_meal(day: &str) -> Result<()> {
+        let mut db = Self::load()?;
+        let original_len = db.meal_plans.len();
+        db.meal_plans
+            .retain(|m| m.day.to_lowercase() != day.to_lowercase());
+
+        if db.meal_plans.len() == original_len {
+            anyhow::bail!("Mahlzeit für '{}' nicht gefunden", day);
+        }
+
+        Self::save(&db)
+    }
+}
+
+// ----------------------------------------------
+// DELETE ARTICLE
+// ----------------------------------------------
+impl Storage {
+    pub fn delete_article(name: &str) -> Result<()> {
+        let mut db = Self::load()?;
+        let original_len = db.articles.len();
+        db.articles
+            .retain(|a| a.name.to_lowercase() != name.to_lowercase());
+
+        if db.articles.len() == original_len {
+            anyhow::bail!("Artikel '{}' nicht gefunden", name);
+        }
+
+        Self::save(&db)
+    }
+}
+
+// ----------------------------------------------
+// DELETE SHOPPING LIST ITEM
+// ----------------------------------------------
+impl Storage {
+    // Shopping-Item löschen nach ID
+    pub fn delete_shopping_item(id: usize) -> Result<()> {
+        let mut db = Self::load()?;
+        let original_len = db.shopping_list.len();
+        db.shopping_list.retain(|i| i.id != id);
+
+        if db.shopping_list.len() == original_len {
+            anyhow::bail!("Einkaufslisten-Item mit ID {} nicht gefunden", id);
+        }
+
+        Self::save(&db)
     }
 }
