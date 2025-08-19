@@ -72,16 +72,27 @@ Delete article from database
 dina list articles
 dina add article "Soap" 3 --unit "1 kg" --category "drugstore" --min-quantity 2
 dina add article "Flour 1050" 2
+
+```
+
+### Shopping list
+
+```sh
+dina add shopping "Salz" 1
+dina add shopping "Mehl" 2 --unit "kg" --store "Aldi Süd"
+dina add shopping "Milch" 1 --unit "Liter" --store "Rewe"
+dina list shopping
+dina delete shopping 2
 ```
 
 ### Sync database with remote git repo
 
 Needs git installed on your system and SSH access to your remote git.
 
-- Init repo: `dina sync init git@github.com:deinusername/dina-database.git`
+- Init repo: `dina sync init git@github.com:yourusername/dina-database.git`
 - Commit: `dina sync push -m "Initial database"`
 - Pull: `dina sync pull`
 - Push: `dina sync push -m "Added new recipes`
 - Status: `dina sync status`
 
-Linux: .local/share/dina-cli/dina-db.toml
+Linux: `.local/share/dina-cli/dina-db.toml`

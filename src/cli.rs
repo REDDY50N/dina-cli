@@ -103,6 +103,11 @@ pub enum AddEntity {
     // -- SHPPING LIST
     Shopping {
         item: String,
+        quantity: u32,
+        #[arg(short, long)]
+        unit: Option<String>,
+        #[arg(short, long)]
+        store: Option<String>,
     },
 }
 

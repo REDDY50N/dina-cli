@@ -41,6 +41,10 @@ pub struct MealPlan {
 pub struct ShoppingItem {
     pub id: usize,
     pub name: String,
+    pub quantity: u32,
+    pub unit: Option<String>,
+    pub store: Option<String>,
+    pub purchased: bool,
 }
 
 // ----------------------------------------------

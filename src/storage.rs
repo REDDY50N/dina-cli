@@ -1,7 +1,7 @@
 //use crate::Article;
 use crate::Recipe;
 // use crate::models::Database;
-use crate::models::{Article, Database, MealPlan};
+use crate::models::{Article, Database, MealPlan, ShoppingItem};
 
 use anyhow::{Context, Result};
 use directories::ProjectDirs;
@@ -87,6 +87,16 @@ impl Storage {
 }
 
 // ----------------------------------------------
+// LIST SHOPPING LIST
+// ----------------------------------------------
+impl Storage {
+    pub fn list_shopping_items() -> Result<Vec<ShoppingItem>> {
+        let db = Self::load()?;
+        Ok(db.shopping_list)
+    }
+}
+
+// ----------------------------------------------
 // ADD RECIPE
 // ----------------------------------------------
 impl Storage {
@@ -119,6 +129,25 @@ impl Storage {
             db.articles.push(article);
         }
 
+        Self::save(&db)
+    }
+}
+
+// ----------------------------------------------
+// ADD SHOPPING LOIST ITEM
+// ----------------------------------------------
+impl Storage {
+    pub fn add_shopping_item(item: ShoppingItem) -> Result<()> {
+        let mut db = Self::load()?;
+
+        // Generiere eine eindeutige ID
+        let new_id = db.shopping_list.iter().map(|i| i.id).max().unwrap_or(0) + 1;
+
+        let mut item = item;
+        item.id = new_id;
+        item.purchased = false;
+
+        db.shopping_list.push(item);
         Self::save(&db)
     }
 }
