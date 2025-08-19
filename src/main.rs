@@ -221,11 +221,30 @@ fn handle_edit(entity: cli::EditEntity) {
 // ----------------------------------------------
 // HADNLE - DELETE
 // ----------------------------------------------
-fn handle_delete(entity: cli::DeleteEntity) {
+fn handle_delete(entity: cli::DeleteEntity) -> anyhow::Result<()> {
     match entity {
-        cli::DeleteEntity::Recipe { name } => println!("Deleting recipe: {}", name),
-        cli::DeleteEntity::Article { name } => println!("Deleting article: {}", name),
-        cli::DeleteEntity::Meal { day } => println!("Deleting meal on: {}", day),
+        cli::DeleteEntity::Recipe { name } => {
+            storage::Storage::delete_recipe(&name)?;
+            println!("Delete recipe: {}", name);
+            Ok(())
+        }
+        cli::DeleteEntity::Article { name } => {
+            storage::Storage::delete_article(&name)?;
+            println!("Delete article: {}", name);
+            Ok(())
+        }
+        // TODO: Add meal name
+        cli::DeleteEntity::Meal { day } => {
+            storage::Storage::delete_meal(&day)?;
+            println!("Delete Meal for {}", day);
+            Ok(())
+        }
+        // TODO: Add articel name
+        cli::DeleteEntity::Shopping { id } => {
+            storage::Storage::delete_shopping_item(id)?;
+            println!("Delete shopping list item: {}", id);
+            Ok(())
+        }
     }
 }
 

@@ -20,7 +20,7 @@ Using ZED IDE - s. Keybindings: `~/.config/zed/keymap.json`
 
 ### Rust CLI apps
 - List of CLI apps: https://github.com/sts10/rust-command-line-utilities
--
+- Rust CLI recommandations: https://rust-cli-recommendations.sunshowers.io/managing-colors-in-rust.html
 
 ## Extensible Structure
 

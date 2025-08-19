@@ -122,9 +122,10 @@ pub enum EditEntity {
 // ----------------------------------------------
 #[derive(Subcommand)]
 pub enum DeleteEntity {
-    Recipe { name: String },
-    Article { name: String },
-    Meal { day: String },
+    Recipe { name: String },  // Delete recipe by name
+    Article { name: String }, // Delete article by name
+    Meal { day: String },     // Delete meal by day (monday, tuesday, ...)
+    Shopping { id: usize },   // Delete shopping list item by ID
 }
 
 // ----------------------------------------------
