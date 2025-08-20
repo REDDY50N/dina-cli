@@ -242,3 +242,86 @@ impl Storage {
         Self::save(&db)
     }
 }
+
+// ----------------------------------------------
+// DEFAULT ARTICLES
+// ----------------------------------------------
+
+use serde::Deserialize;
+use std::collections::HashMap;
+
+const DEFAULT_ARTICLES_TOML: &str = r#"
+[categories]
+"Obst und Gemüse" = [
+    "Äpfel", "Bananen", "Orangen", "Birnen", "Beeren (Erdbeeren, Himbeeren, Blaubeeren etc.)",
+    "Trauben", "Melone (Wassermelone, Cantaloupe etc.)", "Zitronen", "Limetten", "Tomaten",
+    "Gurken", "Salat (verschiedene Sorten)", "Paprika (verschiedene Farben)", "Zwiebeln",
+    "Knoblauch", "Karotten", "Kartoffeln", "Süßkartoffeln", "Brokkoli", "Blumenkohl",
+    "Zucchini", "Auberginen", "Spinat", "Grünkohl", "Erbsen", "Bohnen", "Mais", "Avocado",
+    "Pilze", "Ingwer", "Knollen (Rote Bete, Sellerie etc.)"
+]
+"Getreideprodukte und Beilagen" = [
+    "Brot (verschiedene Sorten)", "Brötchen", "Reis (verschiedene Sorten)",
+    "Nudeln (verschiedene Sorten)", "Haferflocken", "Müsli", "Knäckebrot",
+    "Kartoffelprodukte (Pommes, Kroketten etc.)", "Quinoa", "Couscous", "Bulgur"
+]
+"Milchprodukte und Alternativen" = [
+    "Milch (Kuhmilch, Sojamilch, Mandelmilch etc.)", "Joghurt (verschiedene Sorten)",
+    "Quark", "Käse (verschiedene Sorten)", "Sahne", "Butter",
+    "vegane Alternativen (z.B. Tofu, Tempeh)"
+]
+"Fleisch, Fisch und Alternativen" = [
+    "Hähnchen", "Rindfleisch", "Schweinefleisch",
+    "Fisch (Lachs, Thunfisch, Kabeljau etc.)", "Wurstwaren", "Hackfleisch",
+    "Eier", "Tofu", "Tempeh", "Veggie-Burger"
+]
+"Hülsenfrüchte, Nüsse und Samen" = [
+    "Linsen", "Kichererbsen", "Bohnen (verschiedene Sorten)", "Erdnüsse",
+    "Mandeln", "Cashewnüsse", "Walnüsse", "Sonnenblumenkerne", "Kürbiskerne", "Chiasamen"
+]
+"Fatte, Öle und Saucen" = [
+    "Olivenöl", "Rapsöl", "Butter", "Mayonnaise", "Ketchup", "Senf", "Essig",
+    "Sojasauce", "Kräuter und Gewürze (verschiedene Sorten)"
+]
+"Getränke" = [
+    "Wasser", "Saft (verschiedene Sorten)", "Softdrinks", "Kaffee", "Tee",
+    "Milch (s.o.)", "Alkohol (Bier, Wein, etc. - in Maßen)"
+]
+"Sonstiges" = [
+    "Zucker", "Salz", "Honig", "Marmelade", "Schokolade", "Kekse", "Süßigkeiten",
+    "Knabbereien (Chips, Salzstangen etc.)", "Fertiggerichte (Suppen, Konserven)",
+    "Tiefkühlprodukte (Gemüse, Pizza, etc.)", "Brotbeläge (Wurst, Käse, Marmelade, etc.)",
+    "Aufstriche (Pesto, Hummus, etc.)", "Eis", "Kuchen", "Backzutaten (Mehl, Backpulver, etc.)"
+]
+"#;
+
+#[derive(Deserialize)]
+struct DefaultArticles {
+    categories: HashMap<String, Vec<String>>,
+}
+
+impl Storage {
+    pub fn get_default_articles_path() -> Result<std::path::PathBuf> {
+        let proj_dirs = ProjectDirs::from("com", "dina", "dina-cli")
+            .context("Could not determine project directory")?;
+
+        let data_dir = proj_dirs.data_dir();
+        std::fs::create_dir_all(data_dir)?;
+
+        Ok(data_dir.join("default_articles.toml"))
+    }
+
+    pub fn load_default_articles() -> Result<HashMap<String, Vec<String>>> {
+        let path = Self::get_default_articles_path()?;
+
+        // Create default file if it doesn't exist
+        if !path.exists() {
+            std::fs::write(&path, DEFAULT_ARTICLES_TOML)?;
+        }
+
+        let content = std::fs::read_to_string(&path)?;
+        let default_articles: DefaultArticles = toml::from_str(&content)?;
+
+        Ok(default_articles.categories)
+    }
+}

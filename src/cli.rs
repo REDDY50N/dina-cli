@@ -10,41 +10,41 @@ pub struct Cli {
 }
 
 // ----------------------------------------------
-// SUB-COMMANDS
+// DINA COMMANDS
 // ----------------------------------------------
 #[derive(Subcommand)]
 pub enum Commands {
-    /// Listet Elemente (Rezepte, Artikel, Mahlzeiten, Einkaufsliste)
+    // -- List elements (recipes, articles, meals, shopping list)
     List {
         #[command(subcommand)]
         entity: ListEntity,
     },
 
-    /// Zeigt Details eines Elements
+    // -- Shows element details
     Show {
         #[command(subcommand)]
         entity: ShowEntity,
     },
 
-    /// Fügt neues Element hinzu
+    // -- Add new element
     Add {
         #[command(subcommand)]
         entity: AddEntity,
     },
 
-    /// Bearbeitet vorhandenes Element
+    // -- Edit existing element
     Edit {
         #[command(subcommand)]
         entity: EditEntity,
     },
 
-    /// Löscht Element
+    // -- Delete existing element
     Delete {
         #[command(subcommand)]
         entity: DeleteEntity,
     },
 
-    /// Synchronisiert die Datenbank mit einem Git-Repository
+    // -- Sync with remote git repo
     Git {
         #[command(subcommand)]
         action: SyncAction,
@@ -60,6 +60,7 @@ pub enum ListEntity {
     Articles,
     Meals,
     Shopping,
+    DefaultArticles, //#[command(name = "default-articles")]
 }
 
 // ----------------------------------------------

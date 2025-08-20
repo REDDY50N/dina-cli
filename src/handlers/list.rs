@@ -2,21 +2,32 @@ use crate::cli::ListEntity;
 use crate::storage;
 use anyhow::Result;
 
+// ----------------------------------------------
+// MATCH CASES
+// ----------------------------------------------
+// HINT: Case must match a function below
 pub fn handle_list(entity: ListEntity) -> Result<()> {
     match entity {
         ListEntity::Recipes => handle_list_recipes(),
         ListEntity::Articles => handle_list_articles(),
         ListEntity::Meals => handle_list_meals(),
         ListEntity::Shopping => handle_list_shopping(),
+        ListEntity::DefaultArticles => handle_list_default_articles(),
     }
 }
 
+// ----------------------------------------------
+// LIST RECIPES
+// ----------------------------------------------
 fn handle_list_recipes() -> Result<()> {
     println!("Listing all recipes:");
     // Hier später die Rezepte auflisten
     Ok(())
 }
 
+// ----------------------------------------------
+// LIST ARTICLES
+// ----------------------------------------------
 fn handle_list_articles() -> Result<()> {
     let articles = storage::Storage::list_articles()?;
     if articles.is_empty() {
@@ -44,6 +55,9 @@ fn handle_list_articles() -> Result<()> {
     Ok(())
 }
 
+// ----------------------------------------------
+// LIST MEALS
+// ----------------------------------------------
 fn handle_list_meals() -> Result<()> {
     let meals = storage::Storage::list_meals()?;
 
@@ -85,6 +99,9 @@ fn handle_list_meals() -> Result<()> {
     Ok(())
 }
 
+// ----------------------------------------------
+// LIST SHOPPING LIST ARTICLES
+// ----------------------------------------------
 fn handle_list_shopping() -> Result<()> {
     let items = storage::Storage::list_shopping_items()?;
     if items.is_empty() {
@@ -109,5 +126,29 @@ fn handle_list_shopping() -> Result<()> {
             );
         }
     }
+    Ok(())
+}
+
+// ----------------------------------------------
+// LIST DEFAULT ARTICLES
+// ----------------------------------------------
+fn handle_list_default_articles() -> anyhow::Result<()> {
+    let categories = storage::Storage::load_default_articles()?;
+
+    println!("Standardartikel nach Kategorien:");
+    println!("{}", "=".repeat(50));
+
+    for (category, items) in categories {
+        println!("\n{}:", category);
+        println!("{}", "-".repeat(category.len() + 1));
+
+        for item in items {
+            println!("  • {}", item);
+        }
+    }
+
+    println!(
+        "\nVerwende 'dina add shopping \"<Artikel>\" <Menge>' um Artikel zur Einkaufsliste hinzuzufügen."
+    );
     Ok(())
 }
