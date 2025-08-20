@@ -1,98 +1,175 @@
-# README
+# DINA CLI 🚀🏡
 
-DINA = Daily Improvement Navigation Assistant
+**DINA** (Daily Improvement Navigation Assistant) is a modern, lightweight CLI tool designed to streamline your household planning and management. It helps you organize recipes, meal plans, manage household articles, and generate shopping lists — all in one simple, easy-to-use interface. ✨📝
 
-Daily helper for organizing recipes, weekly meal plan, articles in stock and a shopping list.
+---
 
+## Features 🌟
 
+- **Recipe Management 🍽️:** Add, view, and organize your recipes.
+- **Household Articles (ERP) 🧴🛒:** Track your current stock of household items, set minimum quantities, and automatically update shopping lists.
+- **Shopping List 📝🛍️:** Create, view, and manage shopping items.
+- **Meal Planning 📅🍲:** Plan weekly meals (future feature).
+- **Persistence 💾:** Save your data in TOML files or a database (e.g., SQLite).
+- **Sync 🔄:** Optional synchronization with remote Git repositories for backup and sharing.
 
-### Persitence
+---
 
-Save data in toml file
-Save data in database e.g. SQLite
+## Getting Started 🚀
 
+### Installation 🛠️
 
-## IDE
+Build and run from source:
 
-Using ZED IDE - s. Keybindings: `~/.config/zed/keymap.json`
-
-## Inspiration
-
-### Rust CLI apps
-- List of CLI apps: https://github.com/sts10/rust-command-line-utilities
-- Rust CLI recommandations: https://rust-cli-recommendations.sunshowers.io/managing-colors-in-rust.html
-
-## Extensible Structure
-
-```
-src/
-├── main.rs         # CLI-Parsing und Routing
-├── cli.rs          # Clap-Definitionen
-├── models.rs       # Datenstrukturen
-├── storage/
-│   ├── mod.rs      # Persistenz-Schnittstelle
-│   ├── json.rs     # JSON-Implementierung
-│   └── sqlite.rs   # SQLite-Implementierung
-├── commands/
-│   ├── mod.rs      # Befehlslogik
-│   ├── list.rs     # list-Implementierung
-│   └── show.rs     # show-Implementierung
-└── editor.rs       # Editor-Integration
+```bash
+git clone https://github.com/reddy50n/dina-cli.git
+cd dina-cli
+cargo install --path .
 ```
 
+Alternatively, download pre-built binaries from the releases page.
 
+---
 
-## Commands and sub-commands
-List all entries in a list of recipes, food stock arictles, shopping list
-- dina list [recipes, articles, shopping]
+## Usage 🧭
 
-Show a whole recipe or single arcticle
-- dina show  [recipe, article]
+### Basic Commands 📝
 
-Add an element to the list / database:
-- dina add [recipe, article, meal, shopping]
+```bash
+dina list [recipes|articles|shopping]
+dina show [recipe|article] <name>
+dina add [recipe|article|shopping] <name> [additional options]
+dina edit [recipe|article|shopping] <name>
+dina delete [recipe|article|meal] <name>
+```
 
-Open file in a (terminal) editor like vim to edit
-- dina edit [recipe, article, meal, shopping]
+### Managing Articles (Household ERP) 🧴🧹
 
-Delete article from database
-- dina delete [recipe, article, meal]
-
-### Examples
-- dina list recipes         => List all recipe names, all articles with amount, all meal names, all shopping list items
-- dina show reicpe <name>   => Print the recipe on the console (formated, human readable)
-- dina show article <name>  => show article status (name, ammount, price, brand, seller, ...)
-
-
-## Usage
-
-### Articles (Household ERP)
-
-```sh
+```bash
+# List all articles
 dina list articles
-dina add article "Soap" 3 --unit "1 kg" --category "drugstore" --min-quantity 2
-dina add article "Flour 1050" 2
 
+# Add a new article
+dina add article "Soap" 3 --unit "1 kg" --category "drugstore" --min-quantity 2
+
+# Update existing article
+dina edit article "Soap" --quantity 5
+
+# Remove an article
+dina delete article "Soap"
 ```
 
-### Shopping list
+### Managing Shopping List 🛒📝
 
-```sh
-dina add shopping "Salz" 1
-dina add shopping "Mehl" 2 --unit "kg" --store "Aldi Süd"
-dina add shopping "Milch" 1 --unit "Liter" --store "Rewe"
+```bash
+# Add items to shopping list
+dina add shopping "Salt" 1 --unit "kg" --store "Aldi"
+dina add shopping "Flour" 2 --unit "kg" --store "Lidl"
+
+# View shopping list
 dina list shopping
+
+# Remove an item from shopping list
 dina delete shopping 2
 ```
 
-### Sync database with remote git repo
+### Recipes 🍳
 
-Needs git installed on your system and SSH access to your remote git.
+```bash
+# List all recipes
+dina list recipes
 
-- Init repo: `dina sync init git@github.com:yourusername/dina-database.git`
-- Commit: `dina sync push -m "Initial database"`
-- Pull: `dina sync pull`
-- Push: `dina sync push -m "Added new recipes`
-- Status: `dina sync status`
+# Show a specific recipe
+dina show recipe "Pancakes"
 
-Linux: `.local/share/dina-cli/dina-db.toml`
+# Add a new recipe
+dina add recipe "Pancakes" --ingredients "Flour, Eggs, Milk" --instructions "Mix and cook"
+
+# Edit an existing recipe
+dina edit recipe "Pancakes"
+
+# Delete a recipe
+dina delete recipe "Pancakes"
+```
+
+### Synchronization with Remote Git Repository 🔗
+
+Ensure `git` is installed and SSH keys are configured.
+
+```bash
+# Initialize synchronization
+dina sync init git@github.com:yourusername/dina-database.git
+
+# Push local changes
+dina sync push -m "Updated recipes"
+
+# Pull latest data
+dina sync pull
+
+# Check status
+dina sync status
+```
+
+---
+
+## Data Persistence 💾
+
+- **TOML Files:** Stored at `.local/share/dina-cli/dina-db.toml` (Linux)
+- **Database:** Optionally, use SQLite for more complex storage
+
+---
+
+## Extensible Architecture 🧱
+
+The project is structured for easy extension:
+
+```
+src/
+├── main.rs
+├── models.rs        # Data structures (Recipe, Article, MealPlan, ShoppingItem, Database)
+├── cli.rs           # Command-line interface definitions
+├── storage.rs       # Persistence logic
+├── git_sync.rs      # Git synchronization
+└── handlers/        # Command handlers (list.rs, add.rs, delete.rs, show.rs, edit.rs, sync.rs)
+```
+
+---
+
+## Inspiration & Resources 📚
+
+- Rust CLI best practices and examples: [rust-command-line-utilities](https://github.com/sts10/rust-command-line-utilities)
+- CLI color management recommendations: [rust-cli-recommendations](https://rust-cli-recommendations.sunshowers.io/managing-colors-in-rust.html)
+
+---
+
+## Testing 🧪
+
+```bash
+# Run unit tests
+cargo test
+
+# Run integration tests
+cargo test --test integration_tests
+
+# Run specific test
+cargo test test_handle_add_recipe
+
+# With code coverage
+cargo tarpaulin --lib --tests
+```
+
+---
+
+## License 📄
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+## Contact ✉️
+
+For issues, feature requests, or contributions, please open an issue on GitHub.
+
+---
+
+*Happy household planning with DINA!* 😊
