@@ -48,6 +48,30 @@ pub struct ShoppingItem {
 }
 
 // ----------------------------------------------
+// NUTRIENT INFO
+// ----------------------------------------------
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NutrientInfo {
+    pub protein: f32,          // g pro 100g
+    pub carbohydrates: f32,    // g pro 100g
+    pub sugar: f32,            // g pro 100g
+    pub fat: f32,              // g pro 100g
+    pub saturated_fat: f32,    // g pro 100g
+    pub salt: f32,             // g pro 100g
+    pub calories: Option<u32>, // kcal pro 100g (optional)
+}
+
+// ----------------------------------------------
+// FOOD ITEM
+// ----------------------------------------------
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FoodItem {
+    pub name: String,
+    pub category: String,
+    pub nutrients: NutrientInfo,
+}
+
+// ----------------------------------------------
 // DATABASE
 // ----------------------------------------------
 #[derive(Debug, Serialize, Deserialize)]

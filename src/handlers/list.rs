@@ -1,4 +1,5 @@
 use crate::cli::ListEntity;
+use crate::nutrients::NutrientStorage;
 use crate::storage;
 use anyhow::Result;
 
@@ -13,6 +14,7 @@ pub fn handle_list(entity: ListEntity) -> Result<()> {
         ListEntity::Meals => handle_list_meals(),
         ListEntity::Shopping => handle_list_shopping(),
         ListEntity::DefaultArticles => handle_list_default_articles(),
+        ListEntity::Nutrients { nutrient_type } => handle_list_nutrients(nutrient_type),
     }
 }
 
@@ -150,5 +152,67 @@ fn handle_list_default_articles() -> anyhow::Result<()> {
     println!(
         "\nVerwende 'dina add shopping \"<Artikel>\" <Menge>' um Artikel zur Einkaufsliste hinzuzufügen."
     );
+    Ok(())
+}
+
+// ----------------------------------------------
+// LIST NUTRIENTS
+// ----------------------------------------------
+fn handle_list_nutrients(nutrient_type: Option<String>) -> anyhow::Result<()> {
+    if let Some(n_type) = nutrient_type {
+        let foods = NutrientStorage::get_foods_by_nutrient(&n_type)?;
+
+        println!("Lebensmittel sortiert nach {} (pro 100g):", n_type);
+        println!("{}", "=".repeat(60));
+        println!(
+            "{:<25} {:<8} {:<12} {:<8} {:<8} {:<8} {:<8} {:<8}",
+            "Name", "Protein", "Kohlenhyd.", "Zucker", "Fett", "ges. Fett", "Salz", "Kalorien"
+        );
+        println!("{}", "-".repeat(60));
+
+        for food in foods.iter().take(20) {
+            // Zeige Top 20
+            println!(
+                "{:<25} {:<8.1} {:<12.1} {:<8.1} {:<8.1} {:<8.1} {:<8.1} {:<8}",
+                food.name,
+                food.nutrients.protein,
+                food.nutrients.carbohydrates,
+                food.nutrients.sugar,
+                food.nutrients.fat,
+                food.nutrients.saturated_fat,
+                food.nutrients.salt,
+                food.nutrients
+                    .calories
+                    .map_or("-".to_string(), |c| c.to_string())
+            );
+        }
+    } else {
+        let foods = NutrientStorage::load_nutrients()?;
+
+        println!("Alle Lebensmittel mit Nährwertangaben (pro 100g):");
+        println!("{}", "=".repeat(60));
+        println!(
+            "{:<25} {:<8} {:<12} {:<8} {:<8} {:<8} {:<8} {:<8}",
+            "Name", "Protein", "Kohlenhyd.", "Zucker", "Fett", "ges. Fett", "Salz", "Kalorien"
+        );
+        println!("{}", "-".repeat(60));
+
+        for food in foods {
+            println!(
+                "{:<25} {:<8.1} {:<12.1} {:<8.1} {:<8.1} {:<8.1} {:<8.1} {:<8}",
+                food.name,
+                food.nutrients.protein,
+                food.nutrients.carbohydrates,
+                food.nutrients.sugar,
+                food.nutrients.fat,
+                food.nutrients.saturated_fat,
+                food.nutrients.salt,
+                food.nutrients
+                    .calories
+                    .map_or("-".to_string(), |c| c.to_string())
+            );
+        }
+    }
+
     Ok(())
 }

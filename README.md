@@ -92,6 +92,23 @@ dina edit recipe "Pancakes"
 dina delete recipe "Pancakes"
 ```
 
+### Show nutrients 🏋️
+
+```bash
+# List nutrients of all food articles
+dina list nutrients
+
+# Sort by high in ... e.g. protein
+dina list nutrients --nutrient-type protein
+
+# Sort by calories
+dina list nutrients --nutrient-type calories
+
+# Show nutrients by food name
+dina show nutrient "Tofu"
+dina show nutrient "Lachs"
+```
+
 ### Synchronization with Remote Git Repository 🔗
 
 Ensure `git` is installed and SSH keys are configured.

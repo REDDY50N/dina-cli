@@ -61,6 +61,11 @@ pub enum ListEntity {
     Meals,
     Shopping,
     DefaultArticles, //#[command(name = "default-articles")]
+
+    Nutrients {
+        #[arg(short, long)]
+        nutrient_type: Option<String>,
+    },
 }
 
 // ----------------------------------------------
@@ -70,6 +75,7 @@ pub enum ListEntity {
 pub enum ShowEntity {
     Recipe { name: String },
     Article { name: String },
+    Nutrient { name: String },
 }
 
 // ----------------------------------------------
