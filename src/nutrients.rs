@@ -1,3 +1,5 @@
+//! This module implements nutrient infos for all food articles (still prototype yet).
+
 use crate::models::FoodItem;
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
