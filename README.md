@@ -83,7 +83,9 @@ dina list recipes
 dina show recipe "Pancakes"
 
 # Add a new recipe
-dina add recipe "Pancakes" --ingredients "Flour, Eggs, Milk" --instructions "Mix and cook"
+dina add recipe "Pizza Margherita" "# Pizza Margherita\n\n## Zutaten\n- 500g Mehl\n..."
+goal: dina add recipe "Pancakes" --ingredients "Flour, Eggs, Milk" --instructions "Mix and cook"
+
 
 # Edit an existing recipe
 dina edit recipe "Pancakes"

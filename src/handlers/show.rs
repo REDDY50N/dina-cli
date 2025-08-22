@@ -2,21 +2,19 @@ use crate::cli::ShowEntity;
 use anyhow::Result;
 
 use crate::nutrients::NutrientStorage;
+use crate::recipe::RecipeStore;
 
 // ----------------------------------------------
 // MATCH CASE
 // ----------------------------------------------
 pub fn handle_show(entity: ShowEntity) -> Result<()> {
     match entity {
-        ShowEntity::Recipe { name } => {
-            println!("Showing recipe: {}", name);
-            Ok(())
-        }
         ShowEntity::Article { name } => {
             println!("Showing article: {}", name);
             Ok(())
         }
 
+        ShowEntity::Recipe { name } => handle_show_recipe(&name),
         ShowEntity::Nutrient { name } => handle_show_nutrient(&name),
     }
 }
@@ -45,6 +43,20 @@ fn handle_show_nutrient(name: &str) -> anyhow::Result<()> {
     } else {
         anyhow::bail!("Keine Nährwertdaten für '{}' gefunden", name);
     }
+
+    Ok(())
+}
+
+// ----------------------------------------------
+// RECIPE <NAME>
+// ----------------------------------------------
+pub fn handle_show_recipe(name: &str) -> Result<()> {
+    let recipe_store = RecipeStore::new()?;
+    let content = recipe_store.load_recipe(name)?;
+
+    println!("Rezept: {}", name);
+    println!("{}", "=".repeat(name.len() + 7));
+    println!("{}", content);
 
     Ok(())
 }

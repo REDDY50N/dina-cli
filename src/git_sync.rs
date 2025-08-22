@@ -86,7 +86,7 @@ impl GitSync {
             .arg("pull")
             .arg("--ff-only")
             .arg("origin")
-            .arg("main")
+            .arg("main") // Repo branch: main (TODO: config)
             .current_dir(&db_dir)
             .status()
             .map_err(|e| GitError::CommandFailed(e.to_string()))?;

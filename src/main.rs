@@ -3,6 +3,7 @@ mod git_sync;
 mod handlers;
 mod models;
 mod nutrients;
+mod recipe;
 mod storage;
 
 use clap::Parser;

@@ -1,5 +1,6 @@
 use crate::cli::ListEntity;
 use crate::nutrients::NutrientStorage;
+use crate::recipe::RecipeStore;
 use crate::storage;
 use anyhow::Result;
 
@@ -22,8 +23,21 @@ pub fn handle_list(entity: ListEntity) -> Result<()> {
 // LIST RECIPES
 // ----------------------------------------------
 fn handle_list_recipes() -> Result<()> {
-    println!("Listing all recipes:");
-    // Hier später die Rezepte auflisten
+    let recipe_store = RecipeStore::new()?;
+    let recipes = recipe_store.list_recipes()?;
+
+    if recipes.is_empty() {
+        println!("Keine Rezepte gefunden.");
+        println!("Verwende 'dina add recipe \"Name\" \"Inhalt\"' um ein Rezept hinzuzufügen.");
+    } else {
+        println!("Verfügbare Rezepte:");
+        println!("{}", "=".repeat(20));
+
+        for recipe in recipes {
+            println!("• {}", recipe);
+        }
+    }
+
     Ok(())
 }
 
