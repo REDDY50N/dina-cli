@@ -1,4 +1,3 @@
-use crate::models::Recipe;
 use crate::models::{Article, Database, MealPlan, ShoppingItem};
 
 use anyhow::{Context, Result};
@@ -24,7 +23,6 @@ impl Storage {
         // -- Create directory
         let data_dir = proj_dirs.data_dir();
         fs::create_dir_all(data_dir)?;
-        println!("Database dir: {:?} Filename: {} ", data_dir, FILENAME);
 
         // -- Create filename
         Ok(data_dir.join(FILENAME))
@@ -203,45 +201,6 @@ impl Storage {
 
         if db.shopping_list.len() == original_len {
             anyhow::bail!("Einkaufslisten-Item mit ID {} nicht gefunden", id);
-        }
-
-        Self::save(&db)
-    }
-}
-
-// ----------------------------------------------
-// ADD RECIPE
-// ----------------------------------------------
-// NOTE: Currently unused because of recipes in md format
-// Later we will use this again with sqlite
-impl Storage {
-    pub fn add_recipe(recipe: Recipe) -> Result<()> {
-        let mut db = Self::load()?;
-
-        // Überprüfe auf Duplikate
-        if db.recipes.iter().any(|r| r.name == recipe.name) {
-            anyhow::bail!("Recipe '{}' already exists", recipe.name);
-        }
-
-        db.recipes.push(recipe);
-        Self::save(&db)
-    }
-}
-
-// ----------------------------------------------
-// DELETE RECIPE
-// ----------------------------------------------
-impl Storage {
-    // NOTE: Currently unused because of recipes in md format
-    // Later we will use this again with sqlite
-    pub fn delete_recipe(name: &str) -> Result<()> {
-        let mut db = Self::load()?;
-        let original_len = db.recipes.len();
-        db.recipes
-            .retain(|r| r.name.to_lowercase() != name.to_lowercase());
-
-        if db.recipes.len() == original_len {
-            anyhow::bail!("Rezept '{}' nicht gefunden", name);
         }
 
         Self::save(&db)
