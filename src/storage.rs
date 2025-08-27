@@ -1,4 +1,3 @@
-use crate::models::Recipe;
 use crate::models::{Article, Database, MealPlan, ShoppingItem};
 
 use anyhow::{Context, Result};
@@ -95,23 +94,6 @@ impl Storage {
 }
 
 // ----------------------------------------------
-// ADD RECIPE
-// ----------------------------------------------
-impl Storage {
-    pub fn add_recipe(recipe: Recipe) -> Result<()> {
-        let mut db = Self::load()?;
-
-        // Überprüfe auf Duplikate
-        if db.recipes.iter().any(|r| r.name == recipe.name) {
-            anyhow::bail!("Recipe '{}' already exists", recipe.name);
-        }
-
-        db.recipes.push(recipe);
-        Self::save(&db)
-    }
-}
-
-// ----------------------------------------------
 // ADD ARTICLE
 // ----------------------------------------------
 impl Storage {
@@ -168,24 +150,6 @@ impl Storage {
     pub fn list_meals() -> Result<Vec<MealPlan>> {
         let db = Self::load()?;
         Ok(db.meal_plans)
-    }
-}
-
-// ----------------------------------------------
-// DELETE RECIPE
-// ----------------------------------------------
-impl Storage {
-    pub fn delete_recipe(name: &str) -> Result<()> {
-        let mut db = Self::load()?;
-        let original_len = db.recipes.len();
-        db.recipes
-            .retain(|r| r.name.to_lowercase() != name.to_lowercase());
-
-        if db.recipes.len() == original_len {
-            anyhow::bail!("Rezept '{}' nicht gefunden", name);
-        }
-
-        Self::save(&db)
     }
 }
 

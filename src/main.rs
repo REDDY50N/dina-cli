@@ -3,11 +3,13 @@ mod git_sync;
 mod handlers;
 mod models;
 mod nutrients;
+mod recipe;
 mod storage;
 
 use clap::Parser;
 use cli::{Cli, Commands};
 
+// -- Entry point (main)
 fn main() {
     if let Err(e) = run() {
         eprintln!("Error: {}", e);
@@ -15,6 +17,7 @@ fn main() {
     }
 }
 
+// -- Run function for CLI command parser and match case execution
 fn run() -> anyhow::Result<()> {
     let cli = Cli::parse();
 

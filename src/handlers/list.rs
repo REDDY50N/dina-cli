@@ -1,5 +1,6 @@
 use crate::cli::ListEntity;
 use crate::nutrients::NutrientStorage;
+use crate::recipe::RecipeStore;
 use crate::storage;
 use anyhow::Result;
 
@@ -22,8 +23,22 @@ pub fn handle_list(entity: ListEntity) -> Result<()> {
 // LIST RECIPES
 // ----------------------------------------------
 fn handle_list_recipes() -> Result<()> {
-    println!("Listing all recipes:");
-    // Hier später die Rezepte auflisten
+    let recipe_store = RecipeStore::new()?;
+    let recipes = recipe_store.list_recipes()?;
+
+    if recipes.is_empty() {
+        println!("No recipes found! Recipe folder is empty!");
+        println!("Use 'dina add recipe \"<Name>\" \"<Content>\"' to add a recipe.");
+    } else {
+        println!("══════════════════════════════════════════════════");
+        println!("  RECIPES                                          ");
+        println!("══════════════════════════════════════════════════");
+
+        for recipe in recipes {
+            println!(" • {}", recipe);
+        }
+        println!("══════════════════════════════════════════════════");
+    }
     Ok(())
 }
 
@@ -33,11 +48,11 @@ fn handle_list_recipes() -> Result<()> {
 fn handle_list_articles() -> Result<()> {
     let articles = storage::Storage::list_articles()?;
     if articles.is_empty() {
-        println!("Keine Artikel im Lager.");
+        println!("No article in stock. Storage is empty!");
     } else {
         println!(
             "{:<20} {:<10} {:<10} {:<15} {:<10}",
-            "Name", "Menge", "Einheit", "Kategorie", "Min-Bestand"
+            "Product", "Quantity", "Unit", "Category", "Min. Stock"
         );
         println!("{}", "-".repeat(65));
 
@@ -48,9 +63,7 @@ fn handle_list_articles() -> Result<()> {
                 article.quantity,
                 article.unit.as_deref().unwrap_or("-"),
                 article.category.as_deref().unwrap_or("-"),
-                article
-                    .min_quantity
-                    .map_or("-".to_string(), |q| q.to_string())
+                article.min_quantity.map_or("-".to_string(), |q| q.to_string())
             );
         }
     }
@@ -107,13 +120,16 @@ fn handle_list_meals() -> Result<()> {
 fn handle_list_shopping() -> Result<()> {
     let items = storage::Storage::list_shopping_items()?;
     if items.is_empty() {
-        println!("Einkaufsliste ist leer.");
+        println!("Shopping list is empty!");
     } else {
+        println!("{}", "═".repeat(75)); // ASCII Line
+        println!("{:^75}", "SHOPPING LIST"); // in the mid of 75
+        println!("{}", "═".repeat(75)); // ASCII Line
         println!(
             "{:<5} {:<20} {:<10} {:<10} {:<15} {:<10}",
-            "ID", "Artikel", "Menge", "Einheit", "Laden", "Erledigt"
+            "ID", "Product", "Quantity", "Unit", "Store/Brand", "Done"
         );
-        println!("{}", "-".repeat(75));
+        println!("{}", "═".repeat(75)); // ASCII Line
 
         for item in items {
             let purchased = if item.purchased { "✓" } else { "" };
@@ -127,6 +143,7 @@ fn handle_list_shopping() -> Result<()> {
                 purchased
             );
         }
+        println!("{}", "═".repeat(75)); // ASCII Line
     }
     Ok(())
 }
@@ -134,11 +151,12 @@ fn handle_list_shopping() -> Result<()> {
 // ----------------------------------------------
 // LIST DEFAULT ARTICLES
 // ----------------------------------------------
+// Articles are sorted by category in the toml file
 fn handle_list_default_articles() -> anyhow::Result<()> {
     let categories = storage::Storage::load_default_articles()?;
 
-    println!("Standardartikel nach Kategorien:");
-    println!("{}", "=".repeat(50));
+    println!("Default Articles:");
+    println!("{}", "═".repeat(50));
 
     for (category, items) in categories {
         println!("\n{}:", category);
@@ -148,10 +166,9 @@ fn handle_list_default_articles() -> anyhow::Result<()> {
             println!("  • {}", item);
         }
     }
+    println!("{}", "═".repeat(50));
 
-    println!(
-        "\nVerwende 'dina add shopping \"<Artikel>\" <Menge>' um Artikel zur Einkaufsliste hinzuzufügen."
-    );
+    println!("\nAdd to shopping list by: 'dina add shopping \"<Product>\" <Quantity>'");
     Ok(())
 }
 
@@ -181,9 +198,7 @@ fn handle_list_nutrients(nutrient_type: Option<String>) -> anyhow::Result<()> {
                 food.nutrients.fat,
                 food.nutrients.saturated_fat,
                 food.nutrients.salt,
-                food.nutrients
-                    .calories
-                    .map_or("-".to_string(), |c| c.to_string())
+                food.nutrients.calories.map_or("-".to_string(), |c| c.to_string())
             );
         }
     } else {
@@ -207,9 +222,7 @@ fn handle_list_nutrients(nutrient_type: Option<String>) -> anyhow::Result<()> {
                 food.nutrients.fat,
                 food.nutrients.saturated_fat,
                 food.nutrients.salt,
-                food.nutrients
-                    .calories
-                    .map_or("-".to_string(), |c| c.to_string())
+                food.nutrients.calories.map_or("-".to_string(), |c| c.to_string())
             );
         }
     }

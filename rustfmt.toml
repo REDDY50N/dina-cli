@@ -1,0 +1,4 @@
+# rustfmt.toml
+# Usage: cargo fmt
+
+max_width = 120

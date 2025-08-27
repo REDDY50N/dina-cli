@@ -1,9 +1,14 @@
 use crate::cli::AddEntity;
-use crate::models::{Article, MealPlan, Recipe, ShoppingItem};
+use crate::models::{Article, MealPlan, ShoppingItem};
+use crate::recipe::RecipeStore;
+
 use crate::storage;
 
 use anyhow::Result;
 
+// ----------------------------------------------
+// MATCH CASE
+// ----------------------------------------------
 pub fn handle_add(entity: AddEntity) -> Result<()> {
     match entity {
         AddEntity::Recipe { name, content } => handle_add_recipe(name, content),
@@ -24,13 +29,26 @@ pub fn handle_add(entity: AddEntity) -> Result<()> {
     }
 }
 
+// ----------------------------------------------
+// RECIPE
+// ----------------------------------------------
+// fn handle_add_recipe(name: String, content: String) -> Result<()> {
+//     let recipe = Recipe { name, content };
+//     storage::Storage::add_recipe(recipe)?;
+//     println!("Rezept erfolgreich hinzugefügt!");
+//     Ok(())
+// }
+
 fn handle_add_recipe(name: String, content: String) -> Result<()> {
-    let recipe = Recipe { name, content };
-    storage::Storage::add_recipe(recipe)?;
-    println!("Rezept erfolgreich hinzugefügt!");
+    let recipe_store = RecipeStore::new()?;
+    recipe_store.save_recipe(&name, &content)?;
+    println!("Add recipe: {}", name);
     Ok(())
 }
 
+// ----------------------------------------------
+// ARTICLE
+// ----------------------------------------------
 fn handle_add_article(
     name: String,
     quantity: u32,
@@ -45,11 +63,14 @@ fn handle_add_article(
         category,
         min_quantity,
     };
+    println!("Add/update article: {}", article.name);
     storage::Storage::add_article(article)?;
-    println!("Artikel erfolgreich hinzugefügt/aktualisiert!");
     Ok(())
 }
 
+// ----------------------------------------------
+// MEAL (MEAL PLAN)
+// ----------------------------------------------
 fn handle_add_meal(day: String, recipe: String) -> Result<()> {
     let valid_days = [
         "monday",
@@ -70,11 +91,14 @@ fn handle_add_meal(day: String, recipe: String) -> Result<()> {
     }
 
     let meal = MealPlan { day, recipe };
-    println!("Add meal {:#?} to plan.", meal);
+    println!("Add meal to meal plan: {} Day: {}", meal.recipe, meal.day);
     storage::Storage::add_meal(meal)?;
     Ok(())
 }
 
+// ----------------------------------------------
+// SHOPPING LIST ITEM
+// ----------------------------------------------
 fn handle_add_shopping(
     item: String,
     quantity: u32,
@@ -89,7 +113,7 @@ fn handle_add_shopping(
         store,
         purchased: false,
     };
-    println!("Add Item to shopping list: {}", shopping_item.name);
+    println!("Add item to shopping list: {}", shopping_item.name);
     storage::Storage::add_shopping_item(shopping_item)?;
     Ok(())
 }
