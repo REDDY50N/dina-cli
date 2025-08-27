@@ -27,7 +27,7 @@ pub fn handle_delete(entity: DeleteEntity) -> Result<()> {
 fn handle_delete_recipe(name: &str) -> Result<()> {
     let recipe_store = RecipeStore::new()?;
     recipe_store.delete_recipe(name)?;
-    println!("Rezept '{}' erfolgreich gelöscht!", name);
+    println!("Delete recipe: {}", name);
     Ok(())
 }
 // ----------------------------------------------
