@@ -1,1 +1,14 @@
+# Notes
+Schmierzettel.md
+tmp/
+
+# Build
 /target
+
+# DB's
+*.db
+*.db-*
+data/
+
+# Environment
+.env
