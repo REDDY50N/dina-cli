@@ -1,7 +1,7 @@
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
-#[command(name = "dina")]
+#[command(name = "foody")]
 #[command(version = "1.0")]
 #[command(about = "Daily Assist (Meal Planer, Shopping List, Food Stock)", long_about = None)]
 pub struct Cli {
@@ -62,10 +62,10 @@ pub enum ListEntity {
     Shopping,
     DefaultArticles, //#[command(name = "default-articles")]
 
-    Nutrients {
-        #[arg(short, long)]
-        nutrient_type: Option<String>,
-    },
+    // Nutrients {
+    //     #[arg(short, long)]
+    //     nutrient_type: Option<String>,
+    // },
 }
 
 // ----------------------------------------------
@@ -75,7 +75,7 @@ pub enum ListEntity {
 pub enum ShowEntity {
     Recipe { name: String },
     Article { name: String },
-    Nutrient { name: String },
+    // Nutrient { name: String },
 }
 
 // ----------------------------------------------

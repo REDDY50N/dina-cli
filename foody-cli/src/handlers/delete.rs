@@ -1,5 +1,5 @@
 use crate::cli::DeleteEntity;
-use crate::recipe::RecipeStore;
+use foody_core::recipe::RecipeStore;
 use crate::storage;
 use anyhow::Result;
 

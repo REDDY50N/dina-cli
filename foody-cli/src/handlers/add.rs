@@ -1,6 +1,6 @@
 use crate::cli::AddEntity;
-use crate::models::{Article, MealPlan, ShoppingItem};
-use crate::recipe::RecipeStore;
+use foody_core::models::{Article, MealPlan, ShoppingItem};
+use foody_core::recipe::RecipeStore;
 
 use crate::storage;
 

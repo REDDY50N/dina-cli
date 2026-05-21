@@ -1,0 +1,23 @@
+[package]
+name = "foody-web"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "foody-web"
+path = "src/main.rs"
+
+[dependencies]
+foody-core = { path = "../foody-core" }
+axum = "0.7"
+maud = { version = "0.26", features = ["axum"] }
+tokio = { workspace = true }
+tower-http = { version = "0.6", features = ["fs", "trace"] }
+serde = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# TODO: Activate later
+# sqlx = { workspace = true }
+# tower-sessions = "0.13"

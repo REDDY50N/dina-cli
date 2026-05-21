@@ -1,0 +1,39 @@
+[package]
+name = "foody-core"
+version = "0.1.0"
+edition = "2024"
+
+#[lib]
+#name = "foody-core"           # The name of the target.
+#path = "src/lib.rs"    # The source file of the target.
+#test = false            # Is tested by default.
+#doctest = false         # Documentation examples are tested by default.
+#bench = false           # Is benchmarked by default.
+#doc = true             # Is documented by default.
+#proc-macro = false     # Set to `true` for a proc-macro library.
+#harness = false         # Use libtest harness.
+#crate-type = ["lib"]   # The crate types to generate.
+#required-features = [] # Features required to build this target (N/A for lib).
+
+
+[dependencies]
+serde = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+chrono = { workspace = true }
+tracing = { workspace = true }
+
+# Auth
+argon2 = "0.5"
+password-hash = "0.5"
+rand = "0.8"
+
+# Async Runtime (for DB and Web-UI)
+tokio = { workspace = true }
+
+# Database (acticate later)
+# sqlx = { workspace = true }
+
+# we need this for now (before refac)
+directories = "5.0"
+toml = "1.1.2+spec-1.1.0"
