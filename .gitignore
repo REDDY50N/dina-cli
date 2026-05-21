@@ -2,6 +2,9 @@
 Schmierzettel.md
 tmp/
 
+# IDE
+.idea/
+
 # Build
 /target
 
