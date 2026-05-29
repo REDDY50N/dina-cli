@@ -10,21 +10,21 @@ pub struct Recipe {
 }
 
 // ----------------------------------------------
-// ARTICLE IN HOUSEHOLD ERP
+// ARTICLE
 // ----------------------------------------------
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Article {
+    pub id: i64,
+    pub user_id: i64,
     pub name: String,
-    pub quantity: u32,
-    #[serde(skip_serializing_if = "Option::is_none")] // z.B. "Stück", "kg", "Packungen"
-    pub unit: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")] // z.B. "Getreide", "Konserven"
-    pub category: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    // Mindestbestand für automatische Einkaufsliste (später)
-    pub min_quantity: Option<u32>,
+    pub emoji: String,
+    pub quantity: f64,
+    pub unit: String,
+    pub category: String,
+    pub storage_location: String,
+    pub min_quantity: Option<f64>,
+    pub warning_active: bool,
 }
-
 // ----------------------------------------------
 // WEEKLY MEAL PLAN
 // ----------------------------------------------

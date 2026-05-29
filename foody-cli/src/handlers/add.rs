@@ -51,13 +51,18 @@ fn handle_add_recipe(name: String, content: String) -> Result<()> {
 // ----------------------------------------------
 fn handle_add_article(
     name: String,
-    quantity: u32,
-    unit: Option<String>,
-    category: Option<String>,
-    min_quantity: Option<u32>,
+    quantity: f64,
+    unit: String,
+    category: String,
+    min_quantity: Option<f64>,
 ) -> Result<()> {
     let article = Article {
         name,
+        emoji,
+        id,
+        user_id,
+        storage_location,
+        warning_active,
         quantity,
         unit,
         category,
